@@ -15,11 +15,11 @@ CREATEDB permissions.
 
 ## Usage
 1. Install the latest version of Vagrant and VirtualBox on the host machine.
-2. Create a SSH key pair, name the files `id_rsa` (private key), `id_rsa.pub` (public key),
+2. Create an SSH key pair, name the files `id_rsa` (private key), `id_rsa.pub` (public key),
  and place them in the `vm_provisioning` directory.
 3. Customize the values of the variables in the "User Configurations" section, at the 
 beginning of the `Vagrantfile`.
-4. If you require any custom environment variables to be avaliable at the guest
+4. If you require any custom environment variables to be available at the guest
 VM, create a file named `environment_variables.sh` within the `vm_provisioning` directory
 and set your environment vars using the standard bash syntax: one
 `export VAR_NAME='var value'` declaration per line. Those vars will be loaded automatically every time the VM 
