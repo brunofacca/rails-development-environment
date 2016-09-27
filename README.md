@@ -40,19 +40,19 @@ every time the VM boots. That is a good place to store your API keys and other s
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|---------------------------|
 | bash_shortcuts.sh        | Custom bash aliases and function definitions.                                                                                                                                                   | "Login" (shell startup) | Symlink at /etc/profile.d |
 | environment_variables.sh | Custom environment variable definitions. You may store your  API keys and other secrets here, as long as you keep this file  outside any Git repositories.                                      | "Login" (shell startup) | Symlink at /etc/profile.d |
-| boot.sh                  | Custom startup commands. These commands were not inserted  in rc.local because: a) we prefer Bash over Bourne Shell; b) the  -e flag used in,rc.local's shebang line causes undesired behavior; | VM boot                 | /etc/rc.local             |
+| boot.sh                  | Custom startup commands. These commands were not inserted  in rc.local because: a) we prefer Bash over Bourne Shell; b) the  -e flag used in rc.local's shebang line causes undesired behavior. | VM boot                 | /etc/rc.local             |
 | provision.sh             | Installs and configures everything in the VM, except Ruby and Rails.                                                                                                                            | VM provisioning         | Vagrantfile               |
 | install_ruby.sh          | Installs Ruby and Rails in the VM at the end of provisioning.                                                                                                                                   | VM provisioning         | Vagrantfile               |
+| Vagrantfile              | General configurations. Set up the VirtualBox VM and the provisioning process.                                                                                                                  | vagrant up, halt, etc   | the user                  |
 
 ## Usage
 
-To start the VM, cd to the directory where the Vagrantfile is (in the host machine) and run `vagrant up`
+To start the VM, cd to the directory where the Vagrantfile is (in the host machine) and run `vagrant up`  
 To turn off the VM, run `vagrant halt`
 
 **Shortcuts**
 
-All shortcuts, except the one to pretty-print Curl JSON output, will only work if executed
- within a Rails app directory.
+All shortcuts except `jcurl` only work when executed within a Rails app directory.
 
 `rs` rails s -b 0.0.0.0  
 `rc` rails console
@@ -82,6 +82,8 @@ origin master)
 ## Release History
 
 - 0.1.0 - Initial release
+- 0.2.0 - Add Bash shortcuts, refactor provision.sh, call environment_variables.sh from 
+a symlink in /etc/profile.d instead of /etc/rc.local, update README.
 
 ## Contributing
 
