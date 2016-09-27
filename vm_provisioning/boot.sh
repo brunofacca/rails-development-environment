@@ -20,13 +20,6 @@ VM_SHARED_FOLDER=`mount -l -t vboxsf | tail -1 | cut -d " " -f 3`
 # Log this script's execution
 echo "`date "+%Y-%m-%d %H:%M:%S"` - Machine booted. ${BASH_SOURCE[0]} script executed." >> /var/log/vagrant_boot.log
 
-# Fix permission problem that reappears on every reboot and stops Postgres from starting
-# Problem existed on Ubuntu Trusty but is gone on Ubuntu Xenial
-#if [ ! -d /var/run/postgresql ]; then
-#	mkdir /var/run/postgresql
-#fi
-#sudo chown -R postgres:postgres /var/run/postgresql
-
 # Checks if the VirtualBox shared folder is mounted.
 if [ ! -f ${VM_SHARED_FOLDER}/Vagrantfile ]; then
 	printf "\033[1;31mCRITICAL ERROR: seems like the Vagrant shared folder (${VM_SHARED_FOLDER}) is empty (not mounted).

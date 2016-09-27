@@ -15,7 +15,6 @@ done
 echo "VirtualBox shared folder is mounted at ${VM_SHARED_FOLDER}."
 		
 # Run our custom init script
-# The file must be called with source or else any environment vars set by it will not be available
 ${VM_SHARED_FOLDER}/vm_provisioning/boot.sh 2>&1 | tee -a /var/log/vagrant_boot.log
 
 # rc.local needs to end with "exit 0"

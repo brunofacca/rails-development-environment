@@ -54,5 +54,8 @@ gem install rails -v ${RAILS_VERSION} --no-rdoc --no-ri
 echo "Installing Node.js (required by the uglifier gem, which is required by Rails)"
 sudo apt-get install -y nodejs
 
+# Install the awesome_print gem (used to pretty print JSON and other data formats)
+gem install awesome_print
+
 RED='\e[1;31m%-6s\e[m\n'
 printf ${RED} "ATTENTION: When installing gems, using RVM and performing other Ruby related tasks, ALWAYS use the `whoami` user, never use root."

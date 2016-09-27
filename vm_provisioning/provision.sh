@@ -140,22 +140,13 @@ timedatectl set-timezone ${TIME_ZONE}
 echo "Setting boot script (boot.sh) permissions."
 chmod 755 ${VM_SHARED_FOLDER}/vm_provisioning/boot.sh
 
-echo "Installing new rc.local"
+echo "Set up custom rc.local"
 mv /etc/rc.local /etc/rc.local.OLD
 # Copy this file (DO NOT link it), as the shared folder is not yet mounted when rc.local is executed
-cp ${VM_SHARED_FOLDER}/vm_provisioning/rc.local /etc/rc.local
+cp ${VM_SHARED_FOLDER}/vm_provisioning/custom_rc.local /etc/rc.local
 
-# Set environment variables defined in the vm_provisioning/environment_variables.sh file
-# The file must be called with source or else the env vars will not be available
-# The environment_variables.sh script cannot be called rc.local nor boot.sh (which is called
-# by rc.local), because rc.local is a Bourn Shell script (not Bash) and any environment,
-# which does not provide the source command.
-LOAD_ENV_VARS="
+echo "Set up custom files in /etc/profile.d"
 if [ -f ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh ]; then
-    source ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh
-fi"
-# Quoting the var name will retain line breaks and indents in the echo command output
-echo "$LOAD_ENV_VARS" >> /etc/profile
-
-# cd to VBox shared folder on login
-echo -e "\ncd ${VM_SHARED_FOLDER}" >> /etc/profile
+    ln -s ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh /etc/profile.d/
+fi
+ln -s ${VM_SHARED_FOLDER}/vm_provisioning/bash_shortcuts.sh /etc/profile.d/
