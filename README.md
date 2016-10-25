@@ -70,14 +70,10 @@ All shortcuts except `jcurl` only work when executed within a Rails app director
 `gpl` git pull  
 `ga` git add . --all  
 `gc` git commit. Takes a commit message as an argument.  
-`gs` git status  
 `gp` git push. Takes a remote name and a branch name as optional arguments (e.g., 
 origin master)       
-
-
-
-
-
+`gs` git status  
+`gl` git log
 
 ## Release History
 

@@ -74,24 +74,24 @@ def check_plugins
 end
 
 def enable_symlinks(vboxmanage)
-	# Enable symlinks on VirtualBox shared folder (shell command ran on the HOST machine)
+  # Enable symlinks on VirtualBox shared folder (shell command ran on the HOST machine)
   system("#{vboxmanage} setextradata development VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant 1")
 end
 
 def check_ssh_keys(ssh_private_key, ssh_public_key)
-	# Check if the SSH keys exist
-	if File.exist?(ssh_private_key) && File.exist?(ssh_public_key)
-		puts "\nThe private key used to access the guest VM and Git is: #{ssh_private_key}"
-		puts "\nThe public key installed in the guest VM (which you should also upload to Git) is: #{ssh_public_key}"
-	else
-		puts 'Could not find the private and/or public SSH keys used to access the VM (via SSH) and your Git account.'
-		abort # Halt the provisioning process
+  # Check if the SSH keys exist
+  if File.exist?(ssh_private_key) && File.exist?(ssh_public_key)
+    puts "\nThe private key used to access the guest VM and Git is: #{ssh_private_key}"
+    puts "\nThe public key installed in the guest VM (which you should also upload to Git) is: #{ssh_public_key}"
+  else
+    puts 'Could not find the private and/or public SSH keys used to access the VM (via SSH) and your Git account.'
+    abort # Halt the provisioning process
   end
 end
 
 def print_shared_folder_paths(host_shared_folder, vm_shared_folder)
-	puts "\nThe shared folder at the host machine is: #{host_shared_folder}"
-	puts "\nThe shared folder at the guest VM is: #{vm_shared_folder}\n\n"
+  puts "\nThe shared folder at the host machine is: #{host_shared_folder}"
+  puts "\nThe shared folder at the guest VM is: #{vm_shared_folder}\n\n"
 end
 
 # Execute specific actions when "vagrant up" or "vagrant provision" are run.
@@ -108,19 +108,19 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/xenial64"
-	
+
   # IMPORTANT: Rails binds to the 127.0.0.1 interface by default. 
   # To access it via forwarded port, run "rails s -b 0.0.0.0"
-	config.vm.network "forwarded_port", guest: 3000, host: 3000 # HTTP
+  config.vm.network "forwarded_port", guest: 3000, host: 3000 # HTTP
   config.vm.network "forwarded_port", guest: 5432, host: 5432 # PostgreSQL
-	
-	# VBox shared folder
+
+  # VBox shared folder
   config.vm.synced_folder '.', vm_shared_folder, create: true
 
   # Do NOT try to upgrade guest additions automatically on boot
   config.vbguest.auto_update = false
-	
-	# VirtualBox provider config
+
+  # VirtualBox provider config
   config.vm.provider "virtualbox" do |vbox|
     # VM name
     vbox.name = vm_name
@@ -154,8 +154,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # A reboot is required for the new guest additions to work
   config.vm.provision :reload
 
-	# Run Shell provisioning script. "privileged: true" indicates it should be run AS ROOT
-	config.vm.provision "shell",
+  # Run Shell provisioning script. "privileged: true" indicates it should be run AS ROOT
+  config.vm.provision "shell",
     path: "#{host_shared_folder}/vm_provisioning/provision.sh",
     privileged: true,
     env: {
@@ -173,10 +173,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'LOCALE' => locale,
       'TIME_ZONE' => time_zone
     }
-	
-	# Run script to install RVM, Bundle, Ruby and Rails. This is run as the ubuntu USER because 
-	# installing RVM as root would cause all sorts of problems. 
-	config.vm.provision "shell",
+
+  # Run script to install RVM, Bundle, Ruby and Rails. This is run as the ubuntu USER because
+  # installing RVM as root would cause all sorts of problems.
+  config.vm.provision "shell",
     path: "#{host_shared_folder}/vm_provisioning/install_ruby.sh",
     privileged: false,
     env: {
@@ -184,7 +184,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       'RAILS_VERSION' => rails_version
     }
 
-	config.vm.provision "shell",
+  config.vm.provision "shell",
     inline: "echo -e '\e[1;32mProvisioning finished, your VM is ready. Happy coding!\e[m\n'"
-	
+
 end
