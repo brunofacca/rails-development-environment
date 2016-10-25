@@ -47,8 +47,14 @@ every time the VM boots. That is a good place to store your API keys and other s
 
 ## Usage
 
-To start the VM, cd to the directory where the Vagrantfile is (in the host machine) and run `vagrant up`  
-To turn off the VM, run `vagrant halt`
+cd to the directory where the Vagrantfile is (in the host machine) and run:
+- `vagrant up` to start the VM;
+- `vagrant ssh` to access the VM via SSH;
+- `vagrant halt` to turn off the VM;
+
+You can also access the VM via SSH by connecting to port 2222 of the host machine 
+with your favorite SSH client, using the private key specified in the `ssh_private_key` 
+variable of the Vagrantfile.
 
 **Shortcuts**
 
