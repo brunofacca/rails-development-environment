@@ -4,7 +4,8 @@
 #
 # This script is executed at the end of the boot process of the multiuser runlevels.
 
-# The loop below (written in Bash) waits for the Vagrant shared folder to be mounted before executing the next commands in rc.local.
+# The loop below (written in Bash) waits for the Vagrant shared folder to be 
+# mounted before executing the next commands in rc.local.
 until [ -f ${VM_SHARED_FOLDER}/Vagrantfile ]
 do
 	# Get Vagrant shared folder mount path

@@ -22,6 +22,10 @@ LOCAL_POSTGRES_PASSWORD=$LOCAL_POSTGRES_PASSWORD
 
 LOCALE=$LOCALE
 TIME_ZONE=$TIME_ZONE
+
+SELENIUM_SERVER_DOWNLOAD_URL=$SELENIUM_SERVER_DOWNLOAD_URL
+CHROMEDRIVER_DOWNLOAD_URL=$CHROMEDRIVER_DOWNLOAD_URL
+
 # -----------------------------------------------------------------------------
 
 echo "Fixing 'sudo: unable to resolve host ubuntu-xenial' error"
@@ -41,10 +45,11 @@ until [ -f ${VM_SHARED_FOLDER}/Vagrantfile ]; do
 done
 echo "VirtualBox shared folder is mounted!"
 
+echo "Updating O.S. packages. This may take several minutes depending on the speed of your internet connection."
 # Update apt-get cache
-sudo sudo apt-get update -q >/dev/null
+sudo sudo apt-get update -q
 # Upgrade distro packages
-sudo apt-get upgrade -yq >/dev/null
+sudo apt-get upgrade -yq
 
 # ------------------------ Configure Git for passwordless access -----------------------------
 
@@ -121,12 +126,53 @@ fi
 
 # -------------------------------- Install Elastic Beanstalk CLI ----------------------------------------
 
+echo "Installing Elastic Beanstalk CLI"
+
 # Install Python and pip (required to install the EB CLI)
 apt-get install -y python3 python3-dev python3-pip
 # Upgrade pip
 pip3 install --upgrade pip
 # Instal EB CLI
 pip3 install awsebcli
+
+# -------------- Install Xvfb, Selenium, ChromeDriver and Chrome ---------------
+
+echo "Installing Xvfb, Selenium, ChromeDriver and Google Chrome"
+
+# Add Google public key to apt
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+
+# Add Google to the apt-get source list
+sudo sh -c 'echo deb http://dl.google.com/linux/chrome/deb/ stable main > /etc/apt/sources.list.d/google.list'
+sudo apt-get update
+
+# Install a JDK, Xvfb, Google Chrome and additional requirements
+sudo apt-get install -y xvfb dbus-x11 google-chrome-stable default-jdk unzip
+
+# Download Selenium Standalone Server
+sudo wget --progress=bar:force "https://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar" -P /usr/local/bin/
+
+# Download ChromeDriver
+sudo wget --progress=bar:force "https://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip" -P /tmp/
+sudo unzip /tmp/chromedriver_linux64.zip -d /usr/local/bin/
+
+# Let all programs know in whuch display the Xvfb server is
+echo "DISPLAY=\":1\"" >> /etc/environment
+
+# Install the Xvfb init script
+cp ${VM_SHARED_FOLDER}/vm_provisioning/xvfb_init_script.sh /etc/init.d/xvfb
+chmod 755 /etc/init.d/xvfb
+update-rc.d xvfb defaults
+service xvfb start
+
+# Install the Selenium init script
+mkdir /var/run/selenium
+chown $LINUX_USER:$LINUX_USER /var/run/selenium
+cp ${VM_SHARED_FOLDER}/vm_provisioning/selenium_init_script.sh /etc/init.d/selenium
+chmod 755 /etc/init.d/selenium
+update-rc.d selenium defaults
+service selenium start
+
 
 # -------------------------------- Misc ----------------------------------------
 
@@ -143,7 +189,7 @@ chmod 755 ${VM_SHARED_FOLDER}/vm_provisioning/boot.sh
 echo "Set up custom rc.local"
 mv /etc/rc.local /etc/rc.local.OLD
 # Copy this file (DO NOT link it), as the shared folder is not yet mounted when rc.local is executed
-cp ${VM_SHARED_FOLDER}/vm_provisioning/custom_rc.local /etc/rc.local
+cp ${VM_SHARED_FOLDER}/vm_provisioning/custom_rc_local.sh /etc/rc.local
 
 echo "Set up custom files in /etc/profile.d"
 if [ -f ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh ]; then

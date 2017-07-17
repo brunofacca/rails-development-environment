@@ -6,6 +6,10 @@ shopt -s expand_aliases
 alias rs="rails s -b 0.0.0.0"
 alias rc="rails console"
 
+# --------------- RSpec commands ---------------
+alias br="bin/rspec"
+alias brfd="bin/rspec -fd"
+
 # --------------- Rails logs ---------------
 # Tail logs
 alias tdl='tail -f log/development.log'
@@ -31,7 +35,7 @@ export -f bi
 
 # --------------- Git ---------------
 alias gpl="git pull"
-alias ga="git add . --all"
+alias ga="git add"
 # Takes a commit message as an argument
 alias gc="git commit -m $1"
 alias gs="git status"
