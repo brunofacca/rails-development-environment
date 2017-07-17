@@ -73,8 +73,8 @@ directory.
 `rs` rails s -b 0.0.0.0  
 `rc` rails console
 
-`br` bin/rspec. Use within the Rails application folder to run RSpec w/ 
-Spring)  
+`br` bin/rspec. Use within the Rails application folder to run RSpec with 
+Spring.  
 `brfd` bin/rspec --format documentation 
 
 `tdl` tail -f development log  
