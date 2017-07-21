@@ -1,4 +1,4 @@
-# Bruno's Rails Development Environment
+# Zen Rails Development Environment
 
 ## Summary
 Development environment for Ruby on Rails based on Vagrant, 
