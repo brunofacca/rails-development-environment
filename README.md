@@ -38,6 +38,20 @@ will be loaded automatically every time the VM boots. That is a good place to
 store your API keys and other secrets.
 6. Optional: If you wish to use any custom bash aliases or functions, add them
 to `bash_shortcuts.sh`
+7. Optional: If you intend to use Selenium and Chrome headless with Capybara
+ and RSpec, add the following to `spec/rails_helper.rb`:
+
+       require 'selenium-webdriver'
+
+       Capybara.register_driver :selenium do |app|
+         options = Selenium::WebDriver::Chrome::Options.new
+         # The window size is important for screenshots
+         options.add_argument "--window-size=1366,768"
+         Selenium::WebDriver::Chrome.driver_path = "/usr/local/bin/chromedriver"
+         Capybara::Selenium::Driver.new(app, 
+                                        browser: :chrome, 
+                                        options: options)
+       end
 
 [1]:
 https://github.com/brunofacca/rails-development-environment/archive/master.zip

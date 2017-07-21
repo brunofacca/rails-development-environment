@@ -12,7 +12,10 @@
 ### END INIT INFO
 
 XVFB=/usr/bin/Xvfb
-XVFBARGS=":1 -screen 0 1024x768x24 -ac -noreset"
+# We might take screenshots of our headless browser. As of 2017 most users use
+# a screen resolutions of 1366x768. See
+# https://www.w3schools.com/browsers/browsers_display.asp
+XVFBARGS=":1 -screen 0 1366x768x24 -ac -noreset"
 PIDFILE=/var/run/xvfb.pid
 
 case "$1" in
