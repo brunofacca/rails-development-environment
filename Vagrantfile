@@ -10,14 +10,14 @@ VBOXMANAGE_PATH = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
 VM_NAME = "rails_dev"
 
 # Amount of memory allocated to the VM in megabytes
-VM_RAM_MB = 1024
+VM_RAM_MB = 2048
 
 # Nameservers which will be used by the guest VM
 VM_NAMESERVER1 = "8.8.8.8"
 VM_NAMESERVER2 = "8.8.4.4"
 
 # Desired path for the VirtualBox shared folder within the host and VM
-HOST_SHARED_FOLDER = HOST_VAGRANT_DIR 
+HOST_SHARED_FOLDER = HOST_VAGRANT_DIR
 VM_SHARED_FOLDER = "/projects"
 
 # SSH keys used to access the VM and your GitHub account.
@@ -125,7 +125,8 @@ if (ARGV[0] == "up") || (ARGV[0] == "provision")
   enable_symlinks(VBOXMANAGE_PATH)
   check_ssh_keys("#{HOST_SHARED_FOLDER}/#{SSH_PRIVATE_KEY}",
                  "#{HOST_SHARED_FOLDER}/#{SSH_PUBLIC_KEY}")
-  print_shared_folder_paths(HOST_SHARED_FOLDER, VM_SHARED_FOLDER)
+  print_shared_folder_paths(HOST_SHARED_FOLDER,
+                            VM_SHARED_FOLDER)
 end
 
 # ------------------- VM config and provisioning -------------------------
@@ -134,7 +135,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/xenial64"
 
-  # IMPORTANT: Rails binds to the 127.0.0.1 interface by default. 
+  # IMPORTANT: Rails binds to the 127.0.0.1 interface by default.
   # To access it via forwarded port, run "rails s -b 0.0.0.0"
   config.vm.network "forwarded_port", guest: 3000, host: 3000 # HTTP
   config.vm.network "forwarded_port", guest: 5432, host: 5432 # PostgreSQL
