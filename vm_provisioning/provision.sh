@@ -91,7 +91,14 @@ apt-get install -y mysql-server-5.7 mysql-client libmysqlclient-dev
 # clients for debugging purposes.
 sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/mysql/mysql.conf.d/mysqld.cnf
 
+# The socket file is created in the wrong place. Fix by creating a link.
+ln -s /var/lib/mysql/mysql.sock /tmp/mysql.sock
+
 systemctl restart mysql.service
+
+# Allow the root user to connect remotely, so we can use an SQL client at our
+# desktop to access the DB.
+mysql -u root -plocaldbpass -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${LOCAL_MYSQL_PASSWORD}';"
 
 # ------------------------ Install and configure PostgresSQL -----------------------------
 
@@ -100,9 +107,8 @@ apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
 
 echo "Configuring PostgreSQL"
 postgres_config_dir=/etc/postgresql/`ls /etc/postgresql`/main
-# Allow local connections to PostgreSQL without a password and remote
-# connextions with a password. Note that the host machine is considered
-# "remote" by the vagrant VM.
+# Allow local and remote connextions to the DB. Note that the host machine is
+# considered "remote" by the vagrant VM.
 # See https://www.postgresql.org/docs/current/static/auth-pg-hba-conf.html
 # Note that we're overwriting the entire pg_hba.conf file
 echo -e "\n# Added by provision.sh to allow the developer to use a desktop SQL client (e.g., pgAdmin) for debug purposes
