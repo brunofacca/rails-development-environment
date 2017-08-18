@@ -48,6 +48,9 @@ ROOT_PROVISIONING_OPTIONS = {
   "LOCAL_POSTGRES_USERNAME" => "LINUX_USER",
   "LOCAL_POSTGRES_PASSWORD" => "testdbpass",
 
+  # MySQL password for the "root" user
+  "LOCAL_MYSQL_PASSWORD" => "testdbpass",
+
   # Desired locale and TZ for the guest VM
   "LOCALE" => "en_US.UTF-8",
   "TIME_ZONE" => "America/Sao_Paulo",

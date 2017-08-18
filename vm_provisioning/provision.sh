@@ -20,6 +20,8 @@ LINUX_USER=$LINUX_USER
 LOCAL_POSTGRES_USERNAME=$LOCAL_POSTGRES_USERNAME
 LOCAL_POSTGRES_PASSWORD=$LOCAL_POSTGRES_PASSWORD
 
+LOCAL_MYSQL_PASSWORD=$LOCAL_MYSQL_PASSWORD
+
 LOCALE=$LOCALE
 TIME_ZONE=$TIME_ZONE
 
@@ -30,8 +32,8 @@ CHROMEDRIVER_DOWNLOAD_URL=$CHROMEDRIVER_DOWNLOAD_URL
 
 echo "Fixing 'sudo: unable to resolve host ubuntu-xenial' error"
 if ! grep -q $(cat /etc/hostname) /etc/hosts; then
-    echo >> /etc/hosts
-    echo 127.0.0.1 $(cat /etc/hostname) >> /etc/hosts
+  echo >> /etc/hosts
+  echo 127.0.0.1 $(cat /etc/hostname) >> /etc/hosts
 fi
 
 echo "Fixing 'stdin: is not a tty' error"
@@ -40,8 +42,8 @@ echo "Fixing 'stdin: is not a tty' error"
 
 # Wait for the Vagrant shared folder to be mounted before executing the next commands
 until [ -f ${VM_SHARED_FOLDER}/Vagrantfile ]; do
-	echo "`date "+%Y-%m-%d %H:%M:%S"` - Waiting for VirtualBox shared folder (${VM_SHARED_FOLDER}) to be mounted..."
-	sleep 1
+  echo "`date "+%Y-%m-%d %H:%M:%S"` - Waiting for VirtualBox shared folder (${VM_SHARED_FOLDER}) to be mounted..."
+  sleep 1
 done
 echo "VirtualBox shared folder is mounted!"
 
@@ -67,18 +69,18 @@ apt-get install -yq git
 
 # Check if git remote is configured. If not, configure it.
 if [ ! -f ${GIT_LOCAL_DIR}/.git/config ]; then
-	# Git remote is NOT configured
+  # Git remote is NOT configured
   if [ ! -d ${GIT_LOCAL_DIR} ]; then
-		echo "Creating project directory..."
-		mkdir ${GIT_LOCAL_DIR}
-	fi
+    echo "Creating project directory..."
+    mkdir ${GIT_LOCAL_DIR}
+  fi
   if [ ! -d ${GIT_LOCAL_DIR} ]; then
-		echo "Creating local Git directory..."
-		mkdir ${GIT_LOCAL_DIR}
-	fi
-	echo "Initializing Git..."
-	cd ${GIT_LOCAL_DIR}
-	git init
+    echo "Creating local Git directory..."
+    mkdir ${GIT_LOCAL_DIR}
+  fi
+  echo "Initializing Git..."
+  cd ${GIT_LOCAL_DIR}
+  git init
 fi
 if grep -q "github.com" ${GIT_LOCAL_DIR}/.git/config; then
    echo "Git remote is already configured..."
@@ -94,6 +96,26 @@ git config --global user.email ${GIT_USER_EMAIL}
 echo "Configuring SSH *server* (public key) for passwordless access to the guest VM".
 cat ${VM_SHARED_FOLDER}/${SSH_PUBLIC_KEY} >> /home/${LINUX_USER}/.ssh/authorized_keys
 
+# ------------------------ Install and configure MySQL  -----------------------------
+
+# Keep in mind that MySQL comes with insecure default configurations, which
+# should not be a problem in the development environment but are unsuited for
+# production. It comes with a script called mysql_secure_installation (which
+# we will not use here) to remove the insecure defaults.
+
+# Unlike Postgres that does not come with any users, MySQL comes with a
+# root user which we can use in the development environment
+export DEBIAN_FRONTEND=noninteractive
+debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${LOCAL_MYSQL_PASSWORD}"
+debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${LOCAL_MYSQL_PASSWORD}"
+
+apt-get install -y mysql-server-5.7 mysql-client libmysqlclient-dev
+
+# Change bind-address from 127.0.0.1 to 0.0.0.0 so we can use desktop SQL
+# clients for debugging purposes.
+sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/mysql/mysql.conf.d/mysqld.cnf
+
+systemctl restart mysql.service
 
 # ------------------------ Install and configure PostgresSQL -----------------------------
 
@@ -115,13 +137,13 @@ service postgresql restart
 echo "Creating project user and password in PostgreSQL"
 sudo -u postgres psql -c "CREATE USER ${LOCAL_POSTGRES_USERNAME} WITH LOGIN PASSWORD '${LOCAL_POSTGRES_PASSWORD}';"
 if [ $? -eq 0 ]; then
-    echo "Sucessfully created PostgreSQL user called ${LOCAL_POSTGRES_USERNAME} with password ${LOCAL_POSTGRES_PASSWORD}"
+  echo "Sucessfully created PostgreSQL user called ${LOCAL_POSTGRES_USERNAME} with password ${LOCAL_POSTGRES_PASSWORD}"
 fi
 
 echo "Giving the DB user permission to create new databases (required for the rake db:create command to work)"
 sudo -u postgres psql -c "ALTER USER ${LOCAL_POSTGRES_USERNAME} CREATEDB;"
 if [ $? -eq 0 ]; then
-    echo "Sucessfully given CREATEDB permission to PostgreSQL user called ${LOCAL_POSTGRES_USERNAME}"
+  echo "Sucessfully given CREATEDB permission to PostgreSQL user called ${LOCAL_POSTGRES_USERNAME}"
 fi
 
 # -------------------------------- Install Elastic Beanstalk CLI ----------------------------------------
@@ -193,6 +215,6 @@ cp ${VM_SHARED_FOLDER}/vm_provisioning/custom_rc_local.sh /etc/rc.local
 
 echo "Set up custom files in /etc/profile.d"
 if [ -f ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh ]; then
-    ln -s ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh /etc/profile.d/
+  ln -s ${VM_SHARED_FOLDER}/vm_provisioning/environment_variables.sh /etc/profile.d/
 fi
 ln -s ${VM_SHARED_FOLDER}/vm_provisioning/bash_shortcuts.sh /etc/profile.d/
