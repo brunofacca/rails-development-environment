@@ -1,3 +1,5 @@
 id_rsa
 id_rsa.pub
 environment_variables.sh
+*.log
+.vagrant/

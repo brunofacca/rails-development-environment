@@ -35,9 +35,7 @@ ROOT_PROVISIONING_OPTIONS = {
   "GIT_USER_FULL_NAME" => "Bruno Facca",
   "GIT_USER_EMAIL" => "bruno@facca.info",
 
-  # Should be a subdirectory of VM_SHARED_FOLDER
-  "GIT_LOCAL_DIR" => "#{VM_SHARED_FOLDER}/awake",
-  "GIT_REPOSITORY_SSH_URL" => "git@github.com:ivanlm/awake.git",
+  # SSH key for remote access to the VM and passwordless access to GitHub
   "SSH_PRIVATE_KEY" => SSH_PRIVATE_KEY,
   "SSH_PUBLIC_KEY" => SSH_PUBLIC_KEY,
 
@@ -45,7 +43,7 @@ ROOT_PROVISIONING_OPTIONS = {
   "LINUX_USER" => "ubuntu",
 
   # PostgreSQL username and password which will be created on provisioning
-  "LOCAL_POSTGRES_USERNAME" => "LINUX_USER",
+  "LOCAL_POSTGRES_USERNAME" => "localdbuser",
   "LOCAL_POSTGRES_PASSWORD" => "localdbpass",
 
   # MySQL password for the "root" user
@@ -141,6 +139,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # To access it via forwarded port, run "rails s -b 0.0.0.0"
   config.vm.network "forwarded_port", guest: 3000, host: 3000 # HTTP
   config.vm.network "forwarded_port", guest: 5432, host: 5432 # PostgreSQL
+  config.vm.network "forwarded_port", guest: 3306, host: 3306 # MySQL
 
   # VBox shared folder
   config.vm.synced_folder ".", VM_SHARED_FOLDER, create: true

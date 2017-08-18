@@ -14,6 +14,7 @@ called `ubuntu` with password `localdbpass` and grant it CREATEDB permissions.
 the `root` user to `localdbpass`.
 - Install and configure Git at the VM.
 - Install Elastic Beanstalk CLI at the VM.
+- Install Heroku CLI at the VM.
 - Install [Selenium Webdriver](http://docs.seleniumhq.org/projects/webdriver/), 
 [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/), and
 [Xvfb](https://www.x.org/archive/X11R7.7/doc/man/man1/Xvfb.1.xhtml). These 
@@ -110,18 +111,6 @@ Takes a URL as an argument.
 (e.g., origin master)       
 `gs` git status  
 `gl` git log
-
-## Release History
-
-- 0.1.0 - Initial release
-- 0.2.0 - Add Bash shortcuts, refactor provision.sh, call
-environment_variables.sh from a symlink in /etc/profile.d instead of
-/etc/rc.local, update README.
-- 0.3.0 - Refactor Vagrantfile, add RSpec bash shortcuts, add [Selenium
-Webdriver](http://docs.seleniumhq.org/projects/webdriver/),
-[ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/),
-[Xvfb](https://www.x.org/archive/X11R7.7/doc/man/man1/Xvfb.1.xhtml) and Google
-Chrome installation.
 
 ## Contributing
 

@@ -27,11 +27,5 @@ if [ ! -f ${VM_SHARED_FOLDER}/Vagrantfile ]; then
 	exit 1  # Exit with error exit code
 fi
 
-# Start PostgreSQL 
+# Start PostgreSQL
 sudo service postgresql start
-
-export DISPLAY=:10
-sudo -u
-Xvfb :10 -screen 0 1024x768x24 -ac &
-google-chrome --remote-debugging-port=9222 &
-nohup java -jar /usr/local/bin/selenium-server-standalone-3.4.0.jar &

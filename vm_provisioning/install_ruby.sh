@@ -8,7 +8,8 @@
 #   installation. Only use sudo for apt-get and other "root only" commands.
 
 # This script receives the following environment variables from the Vagrantfile
-RAILS_VERSION=$RAILS_VERSION
+# Has to be exported or else the "source" command below makes it unaccessible
+export RAILS_VERSION=$RAILS_VERSION
 # -----------------------------------------------------------------------------
 
 echo "Installing curl"
@@ -21,7 +22,11 @@ sudo apt-get install -yq software-properties-common
 sudo apt-add-repository -y ppa:rael-gc/rvm
 sudo apt-get update
 sudo apt-get install -yq rvm
-rvm reload
+# The linux user (not root) is added to the rvm group. Usually, a logout and
+# login would be required for that to take effect. This is a hack to make the
+# new group effective immediately.
+newgrp rvm
+source /etc/profile.d/rvm.sh
 rvm install ruby --quiet-curl
 
 # Use the following if the RVM package for Ubuntu does not work

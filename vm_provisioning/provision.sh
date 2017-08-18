@@ -12,8 +12,6 @@ SSH_PUBLIC_KEY=$SSH_PUBLIC_KEY
 GIT_HOST=$GIT_HOST
 GIT_USER_FULL_NAME=$GIT_USER_FULL_NAME
 GIT_USER_EMAIL=$GIT_USER_EMAIL
-GIT_LOCAL_DIR=$GIT_LOCAL_DIR
-GIT_REPOSITORY_SSH_URL=$GIT_REPOSITORY_SSH_URL
 
 LINUX_USER=$LINUX_USER
 
@@ -67,28 +65,6 @@ echo -e "Host ${GIT_HOST}\n\tStrictHostKeyChecking no\n" >> /etc/ssh/ssh_config
 echo "Installing Git"
 apt-get install -yq git
 
-# Check if git remote is configured. If not, configure it.
-if [ ! -f ${GIT_LOCAL_DIR}/.git/config ]; then
-  # Git remote is NOT configured
-  if [ ! -d ${GIT_LOCAL_DIR} ]; then
-    echo "Creating project directory..."
-    mkdir ${GIT_LOCAL_DIR}
-  fi
-  if [ ! -d ${GIT_LOCAL_DIR} ]; then
-    echo "Creating local Git directory..."
-    mkdir ${GIT_LOCAL_DIR}
-  fi
-  echo "Initializing Git..."
-  cd ${GIT_LOCAL_DIR}
-  git init
-fi
-if grep -q "github.com" ${GIT_LOCAL_DIR}/.git/config; then
-   echo "Git remote is already configured..."
-else
-  echo "Configuring git remote"
-  git remote add origin ${GIT_REPOSITORY_SSH_URL}
-fi
-
 # Git user config
 git config --global user.name ${GIT_USER_FULL_NAME}
 git config --global user.email ${GIT_USER_EMAIL}
@@ -124,12 +100,27 @@ apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
 
 echo "Configuring PostgreSQL"
 postgres_config_dir=/etc/postgresql/`ls /etc/postgresql`/main
-# Allow local and remote connections to PostgreSQL without a password
+# Allow local connections to PostgreSQL without a password and remote
+# connextions with a password. Note that the host machine is considered
+# "remote" by the vagrant VM.
 # See https://www.postgresql.org/docs/current/static/auth-pg-hba-conf.html
+# Note that we're overwriting the entire pg_hba.conf file
 echo -e "\n# Added by provision.sh to allow the developer to use a desktop SQL client (e.g., pgAdmin) for debug purposes
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
-host    all             all             0.0.0.0/0               trust
-local   all             all             0.0.0.0/0               trust" >> ${postgres_config_dir}/pg_hba.conf
+host    all             all             0.0.0.0/0               md5
+local   all             all                                     trust" > ${postgres_config_dir}/pg_hba.conf
+
+echo "Creating project user and password in PostgreSQL"
+sudo -u postgres psql -c "CREATE USER ${LOCAL_POSTGRES_USERNAME} WITH LOGIN PASSWORD '${LOCAL_POSTGRES_PASSWORD}';"
+if [ $? -eq 0 ]; then
+  echo "Sucessfully created PostgreSQL user called ${LOCAL_POSTGRES_USERNAME} with password ${LOCAL_POSTGRES_PASSWORD}"
+fi
+
+echo "Giving the DB user permission to create new databases (required for the rake db:create command to work)"
+sudo -u postgres psql -c "ALTER USER ${LOCAL_POSTGRES_USERNAME} CREATEDB;"
+if [ $? -eq 0 ]; then
+  echo "Sucessfully given CREATEDB permission to PostgreSQL user called ${LOCAL_POSTGRES_USERNAME}"
+fi
 
 # Listen on all interfaces
 sed -i "s/^.*listen_addresses.*$/listen_addresses = '*' # Listen on all NICs. Line changed by provision.sh/" ${postgres_config_dir}/postgresql.conf
@@ -137,23 +128,7 @@ sed -i "s/^.*listen_addresses.*$/listen_addresses = '*' # Listen on all NICs. Li
 # Restart postgres
 service postgresql restart
 
-# If you need to restrict access to PostgreSQL in the development
-# environment, replace "trust" by "md5" in the pg_hba.conf above and
-# uncomment the following lines to create a PostgreSQL user and password.
-#
-#echo "Creating project user and password in PostgreSQL"
-#sudo -u postgres psql -c "CREATE USER ${LOCAL_POSTGRES_USERNAME} WITH LOGIN PASSWORD '${LOCAL_POSTGRES_PASSWORD}';"
-#if [ $? -eq 0 ]; then
-#  echo "Sucessfully created PostgreSQL user called ${LOCAL_POSTGRES_USERNAME} with password ${LOCAL_POSTGRES_PASSWORD}"
-#fi
-#
-#echo "Giving the DB user permission to create new databases (required for the rake db:create command to work)"
-#sudo -u postgres psql -c "ALTER USER ${LOCAL_POSTGRES_USERNAME} CREATEDB;"
-#if [ $? -eq 0 ]; then
-#  echo "Sucessfully given CREATEDB permission to PostgreSQL user called ${LOCAL_POSTGRES_USERNAME}"
-#fi
-
-# -------------------------------- Install Elastic Beanstalk CLI ----------------------------------------
+# ---------------------- Install Elastic Beanstalk CLI -------------------------
 
 echo "Installing Elastic Beanstalk CLI"
 
@@ -163,6 +138,13 @@ apt-get install -y python3 python3-dev python3-pip
 pip3 install --upgrade pip
 # Instal EB CLI
 pip3 install awsebcli
+
+# ---------------------------- Install Heroku CLI -------------------------
+
+sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
+curl -L https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install heroku
 
 # -------------- Install Xvfb, Selenium, ChromeDriver and Chrome ---------------
 
