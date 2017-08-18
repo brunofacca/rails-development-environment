@@ -60,10 +60,9 @@ ROOT_PROVISIONING_OPTIONS = {
   "SELENIUM_SERVER_DOWNLOAD_URL" => "https://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar",
 }
 
-# Versions of Ruby and Rails to be installed on the guest VM
+# Version of Rails to be installed on the guest VM
 USER_PROVISIONING_OPTIONS = {
-  "RUBY_VERSION" => "2.3.1",
-  "RAILS_VERSION" => "4.2.7"
+  "RAILS_VERSION" => "5.1.3"
 }
 
 # -------------------- End Of User Configurations ---------------------------
