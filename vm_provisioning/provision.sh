@@ -150,7 +150,7 @@ pip3 install awsebcli
 sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
 curl -L https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
 sudo apt-get update
-sudo apt-get install heroku
+sudo apt-get install -yq heroku
 
 # -------------- Install Xvfb, Selenium, ChromeDriver and Chrome ---------------
 
