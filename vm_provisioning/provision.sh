@@ -124,27 +124,34 @@ apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
 
 echo "Configuring PostgreSQL"
 postgres_config_dir=/etc/postgresql/`ls /etc/postgresql`/main
-# Allow remote connections to PostgreSQL
+# Allow local and remote connections to PostgreSQL without a password
+# See https://www.postgresql.org/docs/current/static/auth-pg-hba-conf.html
 echo -e "\n# Added by provision.sh to allow the developer to use a desktop SQL client (e.g., pgAdmin) for debug purposes
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
-host    all             all             0.0.0.0/0               md5" >> ${postgres_config_dir}/pg_hba.conf
+host    all             all             0.0.0.0/0               trust
+local   all             all             0.0.0.0/0               trust" >> ${postgres_config_dir}/pg_hba.conf
+
 # Listen on all interfaces
 sed -i "s/^.*listen_addresses.*$/listen_addresses = '*' # Listen on all NICs. Line changed by provision.sh/" ${postgres_config_dir}/postgresql.conf
 
 # Restart postgres
 service postgresql restart
 
-echo "Creating project user and password in PostgreSQL"
-sudo -u postgres psql -c "CREATE USER ${LOCAL_POSTGRES_USERNAME} WITH LOGIN PASSWORD '${LOCAL_POSTGRES_PASSWORD}';"
-if [ $? -eq 0 ]; then
-  echo "Sucessfully created PostgreSQL user called ${LOCAL_POSTGRES_USERNAME} with password ${LOCAL_POSTGRES_PASSWORD}"
-fi
-
-echo "Giving the DB user permission to create new databases (required for the rake db:create command to work)"
-sudo -u postgres psql -c "ALTER USER ${LOCAL_POSTGRES_USERNAME} CREATEDB;"
-if [ $? -eq 0 ]; then
-  echo "Sucessfully given CREATEDB permission to PostgreSQL user called ${LOCAL_POSTGRES_USERNAME}"
-fi
+# If you need to restrict access to PostgreSQL in the development
+# environment, replace "trust" by "md5" in the pg_hba.conf above and
+# uncomment the following lines to create a PostgreSQL user and password.
+#
+#echo "Creating project user and password in PostgreSQL"
+#sudo -u postgres psql -c "CREATE USER ${LOCAL_POSTGRES_USERNAME} WITH LOGIN PASSWORD '${LOCAL_POSTGRES_PASSWORD}';"
+#if [ $? -eq 0 ]; then
+#  echo "Sucessfully created PostgreSQL user called ${LOCAL_POSTGRES_USERNAME} with password ${LOCAL_POSTGRES_PASSWORD}"
+#fi
+#
+#echo "Giving the DB user permission to create new databases (required for the rake db:create command to work)"
+#sudo -u postgres psql -c "ALTER USER ${LOCAL_POSTGRES_USERNAME} CREATEDB;"
+#if [ $? -eq 0 ]; then
+#  echo "Sucessfully given CREATEDB permission to PostgreSQL user called ${LOCAL_POSTGRES_USERNAME}"
+#fi
 
 # -------------------------------- Install Elastic Beanstalk CLI ----------------------------------------
 

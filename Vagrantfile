@@ -46,10 +46,10 @@ ROOT_PROVISIONING_OPTIONS = {
 
   # PostgreSQL username and password which will be created on provisioning
   "LOCAL_POSTGRES_USERNAME" => "LINUX_USER",
-  "LOCAL_POSTGRES_PASSWORD" => "testdbpass",
+  "LOCAL_POSTGRES_PASSWORD" => "localdbpass",
 
   # MySQL password for the "root" user
-  "LOCAL_MYSQL_PASSWORD" => "testdbpass",
+  "LOCAL_MYSQL_PASSWORD" => "localdbpass",
 
   # Desired locale and TZ for the guest VM
   "LOCALE" => "en_US.UTF-8",
