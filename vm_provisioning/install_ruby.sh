@@ -17,10 +17,10 @@ sudo apt-get install -yq curl >/dev/null
 
 # USe RVM package for Ubuntu as it takes care of Ubuntu-specific details
 # See https://github.com/rvm/ubuntu_rvm
-sudo apt-get install software-properties-common
+sudo apt-get install -yq software-properties-common
 sudo apt-add-repository -y ppa:rael-gc/rvm
 sudo apt-get update
-sudo apt-get install rvm
+sudo apt-get install -yq rvm
 rvm reload
 rvm install ruby --quiet-curl
 
