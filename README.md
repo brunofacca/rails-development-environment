@@ -8,8 +8,10 @@ The Vagrant provisioning scripts do the following:
 - Set the VM locale and time zone.
 - Configure the VM for SSH access with a custom SSH key.
 - Use RVM to install any version of Ruby and Rails in the VM.
-- Install PostgreSQL, configure it to listen on 0.0.0.0, create a new user and
-grant it CREATEDB permissions.
+- Install PostgreSQL, configure it to listen on 0.0.0.0, create a new user 
+called `ubuntu` with password `testdbpass` and grant it CREATEDB permissions.
+- Install MySQL, configure it to listen on 0.0.0.0 and set the password of 
+the `root` user to `testdbpass`.
 - Install and configure Git at the VM.
 - Install Elastic Beanstalk CLI at the VM.
 - Install [Selenium Webdriver](http://docs.seleniumhq.org/projects/webdriver/), 
