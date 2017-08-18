@@ -15,19 +15,28 @@ echo "Installing curl"
 # Install CURL (required to install RVM)
 sudo apt-get install -yq curl >/dev/null
 
-# RVM and Ruby installation commands from https://rvm.io/
-cd ~
-gpg --quiet --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 >/dev/null
-echo "Downloading RVM"
-curl -ssSL https://get.rvm.io > ~/rvm-install.sh
-echo "Installing RVM"
-bash ~/rvm-install.sh stable --quiet-curl
-# Enable RVM (this is required, or else we could only use the Ruby installation
-# after logging out and in again and most commands below this line would fail)
-source ~/.rvm/scripts/rvm
-echo "Installing the latest stable version of Ruby"
+# USe RVM package for Ubuntu as it takes care of Ubuntu-specific details
+# See https://github.com/rvm/ubuntu_rvm
+sudo apt-get install software-properties-common
+sudo apt-add-repository -y ppa:rael-gc/rvm
+sudo apt-get update
+sudo apt-get install rvm
+rvm reload
 rvm install ruby --quiet-curl
 
+# Use the following if the RVM package for Ubuntu does not work
+# RVM and Ruby installation commands from https://rvm.io/
+#cd ~
+#gpg --quiet --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 >/dev/null
+#echo "Downloading RVM"
+#curl -ssSL https://get.rvm.io > ~/rvm-install.sh
+#echo "Installing RVM"
+#bash ~/rvm-install.sh stable --quiet-curl
+## Enable RVM (this is required, or else we could only use the Ruby installation
+## after logging out and in again and most commands below this line would fail)
+#source ~/.rvm/scripts/rvm
+#echo "Installing the latest stable version of Ruby"
+#rvm install ruby --quiet-curl
 # There is no need to add [[ -s "$HOME/.rvm/scripts/rvm" ]] && source
 # "$HOME/.rvm/scripts/rvm" to /home/ubuntu/.profile as RVM will automatically do
 # that for us.
