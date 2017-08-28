@@ -12,6 +12,7 @@ The Vagrant provisioning scripts do the following:
 called `ubuntu` with password `localdbpass` and grant it CREATEDB permissions.
 - Install MySQL, configure it to listen on 0.0.0.0 and set the password of 
 the `root` user to `localdbpass`.
+- Install Yarn, Rails' official Frontend package manager as of Rails 5.1.
 - Install and configure Git at the VM.
 - Install Elastic Beanstalk CLI at the VM.
 - Install Heroku CLI at the VM.

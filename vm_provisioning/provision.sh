@@ -148,7 +148,7 @@ pip3 install awsebcli
 # ---------------------------- Install Heroku CLI -------------------------
 
 sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
-curl -L https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
+curl -LSs https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install -yq heroku
 
@@ -190,6 +190,12 @@ chmod 755 /etc/init.d/selenium
 update-rc.d selenium defaults
 service selenium start
 
+# ---------------------------- Install Yarn ------------------------------------
+
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update
+sudo apt-get install -y yarn
 
 # -------------------------------- Misc ----------------------------------------
 
