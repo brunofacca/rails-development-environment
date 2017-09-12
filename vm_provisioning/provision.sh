@@ -98,7 +98,7 @@ systemctl restart mysql.service
 
 # Allow the root user to connect remotely, so we can use an SQL client at our
 # desktop to access the DB.
-mysql -u root -plocaldbpass -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${LOCAL_MYSQL_PASSWORD}';"
+mysql -u root -p${LOCAL_MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${LOCAL_MYSQL_PASSWORD}';"
 
 # ------------------------ Install and configure PostgresSQL -----------------------------
 
